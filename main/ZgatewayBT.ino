@@ -675,7 +675,8 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks {
         if (advertisedDevice->haveName())
           BLEdata["name"] = (char*)advertisedDevice->getName().c_str();
         if (advertisedDevice->haveManufacturerData()) {
-          BLEdata["manufacturerdata"] = advertisedDevice->getManufacturerData();
+          char* manufacturerdata = BLEUtils::buildHexData(NULL, (uint8_t*)advertisedDevice->getManufacturerData().data(), advertisedDevice->getManufacturerData().length());
+          BLEdata["manufacturerdata"] = manufacturerdata;
         }
         if (advertisedDevice->haveRSSI())
           BLEdata["rssi"] = (int)advertisedDevice->getRSSI();
@@ -688,7 +689,7 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks {
           int serviceDataCount = advertisedDevice->getServiceDataCount();
           Log.trace(F("Get services data number: %d" CR), serviceDataCount);
           for (int j = 0; j < serviceDataCount; j++) {
-            std::string service_data = advertisedDevice->getServiceData(j);
+            std::string service_data = convertServiceData(advertisedDevice->getServiceData(j));
             Log.trace(F("Service data: %s" CR), service_data.c_str());
             BLEdata["servicedata"] = (char*)service_data.c_str();
             std::string serviceDatauuid = advertisedDevice->getServiceDataUUID(j).toString();
@@ -1132,9 +1133,7 @@ void process_bledata(JsonObject& BLEdata) {
     Log.trace(F("1decoder found device: %s" CR), BLEdata["model"].as<const char*>());
   } else {
     Log.trace(F("No device found " CR));
-    while (1) {
-      taskYIELD();
-    }
+    taskYIELD();
   }
 }
 
