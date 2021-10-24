@@ -42,6 +42,10 @@ ReceivedSignal receivedSignal[] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
 #  define struct_size (sizeof(receivedSignal) / sizeof(ReceivedSignal))
 #endif
 
+#ifdef ZgatewayBT
+#  include <decoder.h>
+#endif
+
 #if defined(ESP8266) || defined(ESP32) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1280__)
 //Time used to wait for an interval before checking system measures
 unsigned long timer_sys_measures = 0;
